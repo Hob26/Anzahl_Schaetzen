@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Anzahlen schätzen – Übungen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#d8edfc;--grid:#ffffff;--ink:#0d3257;--blue:#0d3257;--sky:#2aa6e6;--muted:#46627f;--edge:#0d3257;--pill:#c5e3fa;
+  --sheet:#ffffff;--line:#b7d9f2;--tile:#e6f3fd;
+  --leicht:#4b9a2c;--mittel:#c8740f;--schwer:#7b3f91;
+  --ok:#1f7f49;--okbg:#e3f4ea;--bad:#c2332c;--badbg:#fbe6e4;
+  --lvc:var(--leicht);
+  color-scheme:light;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0e2237;--grid:#163150;--ink:#e3f1fd;--blue:#a9d6f7;--sky:#4dbbf2;--muted:#9fbcd6;--edge:#6fb6ea;--pill:#173b5c;
+    --sheet:#132a42;--line:#264a6c;--tile:#1c3a58;
+    --leicht:#7cc65a;--mittel:#f1a748;--schwer:#c690dc;
+    --ok:#62d394;--okbg:#163828;--bad:#ff857c;--badbg:#3c1d1b;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0e2237;--grid:#163150;--ink:#e3f1fd;--blue:#a9d6f7;--sky:#4dbbf2;--muted:#9fbcd6;--edge:#6fb6ea;--pill:#173b5c;
+  --sheet:#132a42;--line:#264a6c;--tile:#1c3a58;
+  --leicht:#7cc65a;--mittel:#f1a748;--schwer:#c690dc;
+  --ok:#62d394;--okbg:#163828;--bad:#ff857c;--badbg:#3c1d1b;color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;min-height:100%;touch-action:manipulation;
+  font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:18px;line-height:1.45;color:var(--ink);
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 2px,transparent 2px),linear-gradient(90deg,var(--grid) 2px,transparent 2px);
+  background-size:34px 34px;background-attachment:fixed;
+}
+button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+.f{font-family:Fredoka,"Atkinson Hyperlegible",system-ui,sans-serif}
+
+.deco{position:fixed;inset:0;pointer-events:none;z-index:0;color:var(--sky)}
+.deco svg{position:absolute}
+main{position:relative;z-index:1}
+@media (max-width:700px){.deco{display:none}}
+
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background-color:var(--paper);background-image:inherit;background-size:34px 34px;background-attachment:fixed}
+.top-in{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+h1{font-family:Fredoka,"Atkinson Hyperlegible",system-ui,sans-serif;font-weight:600;font-size:1.2rem;letter-spacing:.04em;text-transform:uppercase;margin:0 0 4px;color:var(--ink);white-space:nowrap;background:var(--pill);border:3px solid var(--edge);border-radius:999px;padding:7px 22px;outline:2px dashed var(--sheet);outline-offset:-8px;box-shadow:0 5px 0 var(--edge)}
+.back{border:3px solid var(--edge);background:var(--sheet);color:var(--ink);border-radius:999px;padding:5px 14px;font-family:Fredoka,sans-serif;font-weight:600}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.sn{border:3px solid var(--edge);background:var(--sheet);color:var(--ink);border-radius:999px;padding:4px 12px;font-family:Fredoka,sans-serif;font-weight:600;font-size:.9rem}
+.sn.cur{background:var(--pill)}
+.sn.ok::before{content:"✓ ";color:var(--ok)}
+.sn:disabled{opacity:.45;cursor:default}
+.path{list-style:none;margin:18px 0;padding:0;display:grid;gap:10px}
+.path li{display:flex;gap:12px;align-items:center}
+.pn{flex:none;width:38px;height:38px;border-radius:50%;background:var(--edge);color:var(--sheet);display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-weight:600;font-size:1.1rem}
+.btn.big{font-size:1.2rem;padding:10px 28px}
+.finish{text-align:center}
+.finish .badge{display:flex;justify-content:center;margin-bottom:8px}
+.finish .intro{margin:0 auto}
+.finish .next{display:flex;gap:16px;align-items:center;text-align:left;max-width:520px;margin:22px auto 8px;padding:16px 20px;border:3px solid var(--edge);border-radius:18px;background:var(--pill);font-size:1.1rem}
+.levels{display:flex;gap:6px}
+.lv{--c:var(--leicht);display:flex;align-items:center;gap:8px;border:3px solid var(--c);color:var(--c);background:var(--sheet);border-radius:999px;padding:6px 15px;font-family:Fredoka,sans-serif;font-weight:600}
+.lv .dot{width:11px;height:11px;border-radius:3px;background:var(--c)}
+.lv[aria-pressed="true"]{background:var(--c);color:var(--sheet)}
+.lv[aria-pressed="true"] .dot{background:var(--sheet)}
+
+.sheet{max-width:900px;margin:18px auto 48px;background:var(--sheet);border:3px solid var(--edge);border-radius:22px;padding:24px 28px 28px;position:relative;box-shadow:0 7px 0 var(--edge)}
+h2{margin:0 0 4px;font-family:Fredoka,"Atkinson Hyperlegible",sans-serif;font-weight:600;font-size:1.6rem;color:var(--ink)}
+.intro{margin:0;max-width:64ch}
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between;padding-bottom:14px;border-bottom:3px dashed var(--line)}
+.tools{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.prog{color:var(--muted)}
+.btn{min-height:44px;border:3px solid var(--edge);background:var(--edge);color:var(--sheet);border-radius:999px;padding:6px 18px;font-family:Fredoka,sans-serif;font-weight:600;box-shadow:0 3px 0 color-mix(in srgb,var(--edge) 55%,#000)}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn.ghost{background:var(--sheet);color:var(--ink);box-shadow:0 3px 0 var(--edge)}
+.btn.on{background:var(--pill);color:var(--ink)}
+
+.merk{margin:18px 0 6px;padding:14px 18px;border:3px dashed var(--sky);border-radius:18px;background:var(--tile)}
+.merk strong{font-family:Fredoka,sans-serif;font-weight:600}
+.merk ol{margin:6px 0 0;padding-left:1.4em}
+.choices{display:grid;gap:12px;margin-top:16px}
+.choice{display:grid;grid-template-columns:1fr auto;gap:4px 20px;align-items:center;text-align:left;background:var(--tile);color:var(--ink);border:3px solid var(--edge);border-radius:18px;padding:16px 20px;box-shadow:0 4px 0 var(--edge)}
+.choice:active{transform:translateY(3px);box-shadow:0 1px 0 var(--edge)}
+.choice .ct{font-family:Fredoka,sans-serif;font-weight:600;font-size:1.3rem}
+.choice .cd{grid-column:1;color:var(--muted)}
+.choice .cs{grid-column:2;grid-row:1 / span 2;font-weight:700;white-space:nowrap;background:var(--sheet);border:2px dashed var(--sky);border-radius:999px;padding:6px 14px}
+@media (max-width:600px){.choice{grid-template-columns:1fr}.choice .cs{grid-column:1;grid-row:auto;justify-self:start;margin-top:6px}}
+
+.items{list-style:none;margin:0;padding:0}
+.item{display:grid;grid-template-columns:2.2em 1fr;gap:0 8px;padding:20px 0;border-bottom:2px dashed var(--line)}
+.item:last-child{border-bottom:none}
+.lbl{color:var(--sky);font-family:Fredoka,sans-serif;font-weight:700;font-size:1.25rem}
+.body{min-width:0}
+.step{margin:0 0 10px;font-weight:700}
+.step.sub{font-weight:400;color:var(--muted);margin-top:-6px}
+.fb{margin:8px 0 0;min-height:1.45em;max-width:64ch}
+.fb.ok{color:var(--ok);font-weight:700}
+.fb.bad{color:var(--bad)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}
+.cnt{font-weight:700;background:var(--tile);border:2px solid var(--line);border-radius:999px;padding:6px 14px}
+.num{font-variant-numeric:tabular-nums;font-weight:700;font-size:1.4rem;white-space:nowrap}
+.calc{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.inp{width:8.5em;font:inherit;font-size:1.3rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);background:var(--tile);border:3px solid var(--line);border-radius:12px;padding:7px 12px}
+.inp:focus{border-color:var(--sky);outline:none}
+.inp.ok{border-color:var(--ok);background:var(--okbg)}
+.inp.bad{border-color:var(--bad);background:var(--badbg)}
+.stage{margin-top:16px;padding-top:14px;border-top:2px dotted var(--line)}
+
+.scwrap{position:relative;width:100%;max-width:720px;aspect-ratio:3/2;border:3px solid var(--edge);border-radius:14px;overflow:hidden;background:var(--tile)}
+.scwrap svg{display:block;width:100%;height:100%}
+.zv{max-width:460px}
+.cell{cursor:pointer}
+.tap{cursor:pointer}
+.cover{position:absolute;inset:0;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;background:var(--tile);text-align:center;padding:12px}
+.cover .big{font-family:Fredoka,sans-serif;font-weight:600;font-size:1.4rem}
+.timer{height:10px;max-width:720px;margin-top:8px;border-radius:99px;background:var(--tile);overflow:hidden;border:2px solid var(--line)}
+.timer span{display:block;height:100%;width:100%;background:var(--sky);transform-origin:left}
+.opts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;max-width:720px}
+@media (max-width:560px){.opts{grid-template-columns:repeat(2,1fr)}}
+.opt{min-height:56px;border:3px solid var(--edge);background:var(--tile);color:var(--ink);border-radius:16px;font-family:Fredoka,sans-serif;font-weight:600;font-size:1.3rem;box-shadow:0 3px 0 var(--edge)}
+.opt.ok{background:var(--okbg);border-color:var(--ok);color:var(--ok)}
+.opt.bad{background:var(--badbg);border-color:var(--bad);color:var(--bad)}
+.opt:disabled{cursor:default}
+.result{padding:14px 18px;border:3px solid var(--edge);border-radius:16px;background:var(--pill)}
+.result p{margin:0}
+.result p+p{margin-top:6px}
+.tbar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-bottom:12px}
+.muted{color:var(--muted)}
+
+.done{margin-top:18px;padding:16px 20px;border:3px solid var(--edge);background:var(--pill);border-radius:18px;display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between}
+.done p{margin:0}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}}
+@media (max-width:560px){
+  body{font-size:17px}
+  .sheet{margin:12px 8px 28px;padding:16px 14px 22px;border-radius:18px}
+  h1{font-size:1rem;padding:6px 16px}
+  .top-in{padding:8px 10px}.lv{padding:5px 10px}
+  .item{grid-template-columns:1.8em 1fr}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="s-kaefer" viewBox="-10 -10 20 20">
+    <path d="M-5.5 -3l-3.5 -2M5.5 -3l3.5 -2M-7 2h-3M7 2h3M-6 6l-3 2.5M6 6l3 2.5" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round"/>
+    <circle cx="0" cy="-6.3" r="3.6" fill="#1a1a1a"/>
+    <ellipse cx="0" cy="1.5" rx="7" ry="7.8" fill="#d9342b" stroke="#1a1a1a" stroke-width="1.1"/>
+    <path d="M0 -6v15.2" stroke="#1a1a1a" stroke-width="1"/>
+    <g fill="#1a1a1a"><circle cx="-3.6" cy="-1" r="1.4"/><circle cx="3.6" cy="-1" r="1.4"/><circle cx="-4" cy="4" r="1.4"/><circle cx="4" cy="4" r="1.4"/><circle cx="-1.8" cy="7" r="1"/><circle cx="1.8" cy="7" r="1"/></g>
+  </symbol>
+  <symbol id="s-vogel" viewBox="-10 -10 20 20">
+    <path d="M-9.5 -1.5C-6 -6 -2.5 -4.5 0 0.5C2.5 -4.5 6 -6 9.5 -1.5C6 -3 3 -1.5 0 3.5C-3 -1.5 -6 -3 -9.5 -1.5Z" fill="#141a22"/>
+  </symbol>
+  <symbol id="s-blume" viewBox="-10 -10 20 20">
+    <g fill="#f5c518" stroke="#b9820a" stroke-width=".5">
+      <ellipse cx="0" cy="-5.6" rx="2.2" ry="4.2"/><ellipse cx="0" cy="-5.6" rx="2.2" ry="4.2" transform="rotate(30)"/><ellipse cx="0" cy="-5.6" rx="2.2" ry="4.2" transform="rotate(60)"/><ellipse cx="0" cy="-5.6" rx="2.2" ry="4.2" transform="rotate(90)"/><ellipse cx="0" cy="-5.6" rx="2.2" ry="4.2" transform="rotate(120)"/><ellipse cx="0" cy="-5.6" rx="2.2" ry="4.2" transform="rotate(150)"/><ellipse cx="0" cy="-5.6" rx="2.2" ry="4.2" transform="rotate(180)"/><ellipse cx="0" cy="-5.6" rx="2.2" ry="4.2" transform="rotate(210)"/><ellipse cx="0" cy="-5.6" rx="2.2" ry="4.2" transform="rotate(240)"/><ellipse cx="0" cy="-5.6" rx="2.2" ry="4.2" transform="rotate(270)"/><ellipse cx="0" cy="-5.6" rx="2.2" ry="4.2" transform="rotate(300)"/><ellipse cx="0" cy="-5.6" rx="2.2" ry="4.2" transform="rotate(330)"/>
+    </g>
+    <circle r="4.3" fill="#5a3412"/><circle r="2.5" fill="#3d220b"/>
+  </symbol>
+  <symbol id="s-pinguin" viewBox="-10 -10 20 20">
+    <path d="M-5.5 -0.5l-3 5.5M5.5 -0.5l3 5.5" stroke="#1d2228" stroke-width="2.2" stroke-linecap="round"/>
+    <ellipse cx="0" cy="1.5" rx="6" ry="8.2" fill="#1d2228"/>
+    <ellipse cx="0" cy="3" rx="4" ry="6.2" fill="#ffffff"/>
+    <circle cx="0" cy="-5.6" r="3.8" fill="#1d2228"/>
+    <circle cx="-1.3" cy="-6.1" r=".75" fill="#fff"/><circle cx="1.3" cy="-6.1" r=".75" fill="#fff"/>
+    <path d="M-1.1 -4.3h2.2l-1.1 1.7z" fill="#f29a1d"/>
+    <path d="M-2.6 9.6h2M.6 9.6h2" stroke="#f29a1d" stroke-width="1.3" stroke-linecap="round"/>
+  </symbol>
+</defs></svg>
+
+<div class="deco" aria-hidden="true">
+  <svg style="top:110px;left:3%" width="120" height="64" viewBox="0 0 120 64"><path d="M8 60a52 52 0 0 1 104 0" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="0 14"/></svg>
+  <svg style="top:42%;right:3%" width="34" height="34" viewBox="0 0 34 34"><g stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M17 3v28M3 17h28M7 7l20 20M27 7 7 27"/></g></svg>
+  <svg style="bottom:8%;left:5%" width="30" height="30" viewBox="0 0 34 34"><g stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M17 3v28M3 17h28M7 7l20 20M27 7 7 27"/></g></svg>
+  <svg style="bottom:0;right:6%" width="140" height="74" viewBox="0 0 140 74"><path d="M8 70a62 62 0 0 1 124 0" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="0 15"/></svg>
+</div>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <h1>Anzahlen schätzen</h1>
+      <nav class="nav" id="nav" aria-label="Ablauf"></nav>
+    </div>
+    <div class="levels" id="levels" role="group" aria-label="Niveau" hidden>
+      <button class="lv" data-lv="leicht" style="--c:var(--leicht)" aria-pressed="true"><span class="dot"></span>Leicht</button>
+      <button class="lv" data-lv="schwer" style="--c:var(--schwer)" aria-pressed="false"><span class="dot"></span>Schwer</button>
+    </div>
+  </div>
+</header>
+<main id="app"></main>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s);
+const app=$('#app');
+const LETTERS='abcdefghij';
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const fmt=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'\u202F');
+const parse=v=>{v=String(v).replace(/[\s.\u202F\u2009']/g,'');return /^\d+$/.test(v)?Number(v):NaN};
+const roundTo=(v,u)=>Math.round(v/u)*u;
+
+const TYPES={
+  kaefer:{plur:'Käfer',bg:'#cfe6a8',rot:[0,359]},
+  vogel:{plur:'Vögel',bg:'#9cc3ec',rot:[-25,25]},
+  blume:{plur:'Sonnenblumen',bg:'#3f7d33',rot:[0,359]},
+  pinguin:{plur:'Pinguine',bg:'#e3ebf1',rot:[-8,8]}
+};
+const LV={
+  leicht:{N:[40,70],r:2,c:3,d:'even',s:26,unit:10,unitTxt:'Zehner',info:'6 Felder, ca. 40–70 Dinge'},
+  schwer:{N:[100,190],r:3,c:4,d:'even',s:19,unit:10,unitTxt:'Zehner',info:'12 Felder, ca. 100–190 Dinge'}
+};
+const TASKS={
+  raster:{nr:1,short:'Rastermethode',title:'Rastermethode Schritt für Schritt',intro:'Tippe ein Feld an, zähle darin, rechne und runde. Dann siehst du, wie gut deine Schätzung ist.',count:3,sum:'Ohne Fehler gelöst'},
+  frei:{nr:2,short:'Selbst schätzen',title:'Selbst schätzen',intro:'Schätze die Anzahl. Du kannst das Raster einblenden und in Feldern zählen – du entscheidest selbst, wie.',count:3,sum:'Gut geschätzt (höchstens 25 % daneben)'}
+};
+
+let S={task:null,level:'leicht',items:[],picked:false,done:{raster:false,frei:false},finished:false};
+
+/* ---------- Bilder erzeugen ---------- */
+function genScene(lv){
+  const c=LV[lv],W=600,H=400,type=pick(Object.keys(TYPES)),t=TYPES[type];
+  const objs=[],md=c.s*0.95,pad=c.s*0.4;
+  const free=(x,y)=>objs.every(o=>(o.x-x)**2+(o.y-y)**2>=md*md);
+  const add=(x,y)=>objs.push({x,y,rot:R(...t.rot),k:c.s/20*(0.88+Math.random()*0.24)});
+  const target=R(...c.N);
+  if(c.d==='even'){
+    const cw=W/c.c,ch=H/c.r,per=Math.round(target/(c.r*c.c));
+    for(let i=0;i<c.r;i++)for(let j=0;j<c.c;j++){
+      const n=per+R(-1,1);let placed=0,tries=0;
+      while(placed<n&&tries<4000){tries++;
+        const x=j*cw+pad+Math.random()*(cw-2*pad),y=i*ch+pad+Math.random()*(ch-2*pad);
+        if(free(x,y)){add(x,y);placed++}}
+    }
+  }else{
+    const cs=[[R(80,520),R(60,340)],[R(80,520),R(60,340)]],sg=130;
+    const dens=(x,y)=>c.d==='clus'?0.18+0.82*Math.max(...cs.map(([a,b])=>Math.exp(-((x-a)**2+(y-b)**2)/(2*sg*sg)))):1;
+    let tries=0;
+    while(objs.length<target&&tries<target*200){tries++;
+      const x=pad+Math.random()*(W-2*pad),y=pad+Math.random()*(H-2*pad);
+      if(Math.random()<=dens(x,y)&&free(x,y))add(x,y);
+    }
+  }
+  return{type,W,H,r:c.r,c:c.c,objs};
+}
+const cellOf=(sc,o)=>Math.min(sc.r-1,Math.floor(o.y/(sc.H/sc.r)))*sc.c+Math.min(sc.c-1,Math.floor(o.x/(sc.W/sc.c)));
+const cellRect=(sc,i)=>{const cw=sc.W/sc.c,ch=sc.H/sc.r;return[(i%sc.c)*cw,Math.floor(i/sc.c)*ch,cw,ch]};
+const inCell=(sc,i)=>sc.objs.filter(o=>cellOf(sc,o)===i).length;
+
+function sceneSVG(sc,o={}){
+  const t=TYPES[sc.type],vb=o.zoom!=null?cellRect(sc,o.zoom):[0,0,sc.W,sc.H];
+  let h=`<svg viewBox="${vb.join(' ')}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Bild mit vielen ${t.plur}"><rect x="0" y="0" width="${sc.W}" height="${sc.H}" fill="${t.bg}"/>`;
+  sc.objs.forEach((ob,i)=>{
+    let cls='',extra='',op='';
+    if(o.zoom!=null){
+      if(cellOf(sc,ob)===o.zoom){if(!o.locked)cls='tap';extra=`<circle r="${11*ob.k*1.25}" fill="transparent"/>`}
+      else op=' opacity=".3"';
+    }
+    const mk=o.marks&&o.marks.has(i)?`<circle r="${11*ob.k}" fill="rgba(255,255,255,.35)" stroke="#0d3257" stroke-width="${3*ob.k}"/><circle r="${11*ob.k}" fill="none" stroke="#ffd23f" stroke-width="${1.4*ob.k}"/>`:'';
+    h+=`<g class="${cls}" data-i="${i}" transform="translate(${ob.x.toFixed(1)} ${ob.y.toFixed(1)})"${op}>${extra}<use href="#s-${sc.type}" x="-10" y="-10" width="20" height="20" transform="rotate(${ob.rot}) scale(${ob.k.toFixed(3)})"/>${mk}</g>`;
+  });
+  if(o.grid&&o.zoom==null){
+    let p='';
+    for(let j=1;j<sc.c;j++){const x=j*sc.W/sc.c;p+=`M${x} 0V${sc.H}`}
+    for(let i=1;i<sc.r;i++){const y=i*sc.H/sc.r;p+=`M0 ${y}H${sc.W}`}
+    h+=`<path d="${p}" stroke="#0d3257" stroke-width="5"/><path d="${p}" stroke="#ffffff" stroke-width="2.2"/>`;
+  }
+  if(o.sel!=null&&o.zoom==null){const [x,y,w,hh]=cellRect(sc,o.sel);h+=`<rect x="${x+2}" y="${y+2}" width="${w-4}" height="${hh-4}" fill="rgba(255,210,63,.22)" stroke="#ffd23f" stroke-width="5"/>`}
+  if(o.labels&&o.zoom==null){
+    Object.entries(o.labels).forEach(([i,n])=>{const [x,y]=cellRect(sc,+i);h+=`<g transform="translate(${x+8} ${y+8})"><rect width="${String(n).length*13+18}" height="28" rx="14" fill="#ffffff" stroke="#0d3257" stroke-width="2.5"/><text x="9" y="20" font-family="Fredoka,sans-serif" font-weight="600" font-size="18" fill="#0d3257">${n}</text></g>`});
+  }
+  if(o.cells&&o.zoom==null){for(let i=0;i<sc.r*sc.c;i++){const [x,y,w,hh]=cellRect(sc,i);h+=`<rect class="cell" data-c="${i}" x="${x}" y="${y}" width="${w}" height="${hh}" fill="transparent"/>`}}
+  return h+'</svg>';
+}
+
+/* ---------- Hilfen ---------- */
+function mark(el,ok){el.classList.toggle('ok',ok);el.classList.toggle('bad',!ok)}
+function shake(el){const it=el.closest('.item');it.classList.remove('shake');void it.offsetWidth;it.classList.add('shake')}
+function setFb(fb,cls,html){fb.classList.remove('ok','bad');if(cls)fb.classList.add(cls);fb.innerHTML=html}
+function rating(est,real){
+  const pct=Math.round(Math.abs(est-real)/real*100);
+  let txt=pct<=10?'Super geschätzt!':pct<=25?'Gut geschätzt!':pct<=50?'Das ist noch recht weit weg.':'Das ist weit daneben.';
+  return{pct,txt,good:pct<=25};
+}
+function zoomAspect(el,sc){const [, ,w,h]=cellRect(sc,0);el.style.aspectRatio=`${w}/${h}`}
+
+/* ---------- Ablauf ---------- */
+function drawNav(){
+  const cur=S.finished?'ab':S.task;
+  const chip=(id,label,ok,enabled)=>`<button class="sn${cur===id?' cur':''}${ok?' ok':''}" data-go="${id}" ${enabled?'':'disabled'}>${label}</button>`;
+  $('#nav').innerHTML=chip('raster','1 Rastermethode',S.done.raster,true)+chip('frei','2 Selbst schätzen',S.done.frei,S.done.raster)+chip('ab','Arbeitsblatt',false,S.done.raster&&S.done.frei);
+  $('#nav').querySelectorAll('.sn').forEach(b=>b.onclick=()=>{const g=b.dataset.go;g==='ab'?renderFinish():startTask(g)});
+}
+function setLevel(lv){
+  S.level=lv;document.body.style.setProperty('--lvc',`var(--${lv})`);
+  document.querySelectorAll('.lv').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lv===lv));
+  if(S.task&&S.picked)newSet();
+}
+function renderStart(){
+  S.task=null;S.finished=false;S.picked=false;$('#levels').hidden=true;drawNav();
+  app.innerHTML=`<section class="sheet">
+    <h2>Jetzt übst du allein!</h2>
+    <p class="intro">Du hast mit der Klasse die Smarties geschätzt. Jetzt probierst du die Rastermethode selbst aus.</p>
+    <div class="merk"><strong>So funktioniert die Rastermethode</strong>
+      <ol><li>Das Bild wird in gleich große Felder eingeteilt.</li><li>Du zählst, wie viele in einem Feld sind.</li><li>Du nimmst diese Zahl mal die Anzahl der Felder.</li><li>Du rundest das Ergebnis sinnvoll.</li></ol></div>
+    <ol class="path">
+      <li><span class="pn">1</span><div><b>Aufgabe 1: Rastermethode Schritt für Schritt</b><br><span class="muted">3 Bilder</span></div></li>
+      <li><span class="pn">2</span><div><b>Aufgabe 2: Selbst schätzen</b><br><span class="muted">3 Bilder</span></div></li>
+      <li><span class="pn">✓</span><div><b>Danach: Arbeitsblatt</b><br><span class="muted">mit Lineal und Bleistift</span></div></li>
+    </ol>
+    <button class="btn big" id="go">Los geht’s</button></section>`;
+  $('#go').onclick=()=>startTask('raster');
+}
+function startTask(t){S.task=t;S.finished=false;renderLevelPick();window.scrollTo(0,0)}
+function renderLevelPick(){
+  const t=TASKS[S.task];$('#levels').hidden=true;S.picked=false;drawNav();
+  app.innerHTML=`<section class="sheet"><h2>Aufgabe ${t.nr}: ${t.title}</h2><p class="intro">Wähle dein Niveau.</p>
+    <div class="choices">${['leicht','schwer'].map(l=>`<button class="choice" data-l="${l}" style="border-color:var(--${l});box-shadow:0 4px 0 var(--${l})"><span class="ct" style="color:var(--${l})">${l[0].toUpperCase()+l.slice(1)}</span><span class="cd">${LV[l].info}</span></button>`).join('')}</div></section>`;
+  app.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{S.picked=true;$('#levels').hidden=false;setLevel(b.dataset.l);window.scrollTo(0,0)});
+}
+function newSet(){
+  S.items=Array.from({length:TASKS[S.task].count},()=>({sc:genScene(S.level),status:null,first:true}));
+  renderTask();
+}
+function renderTask(){
+  const t=TASKS[S.task];drawNav();
+  app.innerHTML=`<section class="sheet">
+    <div class="head"><div><h2>Aufgabe ${t.nr}: ${t.title}</h2><p class="intro">${t.intro}</p></div>
+    <div class="tools"><span class="prog" id="prog"></span></div></div>
+    <ol class="items" id="items"></ol><div class="done" id="done" hidden></div></section>`;
+  S.items.forEach((it,i)=>{
+    const li=document.createElement('li');li.className='item';
+    li.innerHTML=`<span class="lbl">${LETTERS[i]})</span><div class="body"></div>`;
+    $('#items').appendChild(li);
+    ({raster:buildRaster,frei:buildFrei})[S.task](it,li.querySelector('.body'));
+  });
+  updateProg();
+}
+function updateProg(){
+  const n=S.items.length,d=S.items.filter(i=>i.status).length,f=S.items.filter(i=>i.status==='ok'&&i.first).length;
+  $('#prog').textContent=`${d} von ${n} bearbeitet`;
+  const done=$('#done');
+  if(d<n){done.hidden=true;return}
+  S.done[S.task]=true;drawNav();done.hidden=false;
+  const last=S.task==='frei';
+  done.innerHTML=`<p><strong>Aufgabe ${TASKS[S.task].nr} geschafft!</strong> ${TASKS[S.task].sum}: ${f} von ${n}.</p>
+    <div class="actions" style="margin:0"><button class="btn ghost" id="again">3 neue Bilder</button><button class="btn" id="next">${last?'Fertig':'Weiter zu Aufgabe 2'}</button></div>`;
+  $('#again').onclick=()=>{newSet();window.scrollTo(0,0)};
+  $('#next').onclick=()=>last?renderFinish():startTask('frei');
+}
+function renderFinish(){
+  S.finished=true;S.task=null;$('#levels').hidden=true;drawNav();window.scrollTo(0,0);
+  app.innerHTML=`<section class="sheet finish">
+    <div class="badge" aria-hidden="true"><svg viewBox="0 0 64 64" width="96" height="96"><circle cx="32" cy="32" r="29" fill="var(--okbg)" stroke="var(--ok)" stroke-width="4"/><path d="M19 33l9 9 18-20" fill="none" stroke="var(--ok)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h2>Super, du bist fertig!</h2>
+    <p class="intro">Du hast beide Aufgaben bearbeitet.</p>
+    <div class="next"><svg viewBox="0 0 48 48" width="56" height="56" aria-hidden="true"><rect x="9" y="5" width="30" height="38" rx="3" fill="var(--sheet)" stroke="var(--edge)" stroke-width="3"/><path d="M15 15h18M15 22h18M15 29h12" stroke="var(--sky)" stroke-width="3" stroke-linecap="round"/><rect x="4" y="36" width="40" height="7" rx="2" fill="#ffd23f" stroke="var(--edge)" stroke-width="2.5" transform="rotate(-12 24 39)"/></svg>
+      <div><strong>Jetzt kommt das Arbeitsblatt.</strong><br>Hol dir das Arbeitsblatt und dein Lineal und beginne mit Aufgabe 1.</div></div>
+    <div class="actions" style="justify-content:center"><button class="btn ghost" id="more">Noch mehr üben</button></div></section>`;
+  $('#more').onclick=()=>startTask('frei');
+}
+
+/* Zähl-Ansicht (gemeinsam) */
+function counter(it,zoomEl,cntEl,onChange){
+  zoomAspect(zoomEl,it.sc);
+  const draw=()=>{zoomEl.innerHTML=sceneSVG(it.sc,{zoom:it.cell,marks:it.marks,locked:it.locked});cntEl.textContent=`Markiert: ${it.marks.size}`};
+  zoomEl.onclick=e=>{
+    const g=e.target.closest('g.tap');if(!g||it.locked)return;
+    const i=+g.dataset.i;it.marks.has(i)?it.marks.delete(i):it.marks.add(i);draw();onChange&&onChange();
+  };
+  return draw;
+}
+
+/* ---- Rastermethode Schritt für Schritt ---- */
+function buildRaster(it,el){
+  const sc=it.sc,F=sc.r*sc.c,t=TYPES[sc.type],c=LV[S.level];
+  Object.assign(it,{cell:null,marks:new Set(),locked:false});
+  el.innerHTML=`
+  <p class="step">1. Das Bild hat ${F} gleich große Felder. Tippe ein Feld an.</p>
+  <div class="scwrap main"></div>
+  <div class="stage zoom" hidden>
+    <p class="step">2. Zähle die ${t.plur} in diesem Feld: Tippe jeden einzelnen an.</p>
+    <p class="step sub">Blasse ${t.plur} gehören zu einem Nachbarfeld. Nochmal antippen entfernt die Markierung.</p>
+    <div class="scwrap zv"></div>
+    <div class="actions"><span class="cnt"></span><button class="btn cdone">Fertig gezählt</button></div>
+    <p class="fb f2" aria-live="polite"></p>
+  </div>
+  <div class="stage s3" hidden>
+    <p class="step">3. Rechne: Anzahl in einem Feld · Anzahl der Felder</p>
+    <div class="calc"><span class="num n3"></span><input class="inp i3" inputmode="numeric" autocomplete="off" aria-label="Ergebnis"><button class="btn b3">Prüfen</button></div>
+    <p class="fb f3" aria-live="polite"></p>
+  </div>
+  <div class="stage s4" hidden>
+    <p class="step">4. Runde dein Ergebnis auf ${c.unitTxt}.</p>
+    <div class="calc"><span class="num n4"></span><input class="inp i4" inputmode="numeric" autocomplete="off" aria-label="Gerundetes Ergebnis"><button class="btn b4">Prüfen</button></div>
+    <p class="fb f4" aria-live="polite"></p>
+  </div>
+  <div class="stage s5" hidden><div class="result"></div></div>`;
+  const main=$('.main',el),zoom=$('.zoom',el),zv=$('.zv',el),f2=$('.f2',el);
+  const drawMain=()=>main.innerHTML=sceneSVG(sc,{grid:true,cells:!it.locked,sel:it.cell});
+  const drawZoom=counter(it,zv,$('.cnt',el),()=>setFb(f2,'',''));
+  main.onclick=e=>{
+    const r=e.target.closest('[data-c]');if(!r||it.locked)return;
+    it.cell=+r.dataset.c;it.marks=new Set();drawMain();zoom.hidden=false;drawZoom();setFb(f2,'','');
+    zoom.scrollIntoView({behavior:'smooth',block:'nearest'});
+  };
+  drawMain();
+  let n,prod,est;
+  $('.cdone',el).onclick=()=>{
+    const real=inCell(sc,it.cell);
+    if(it.marks.size===real){
+      n=real;it.locked=true;drawMain();drawZoom();$('.cdone',el).hidden=true;
+      setFb(f2,'ok',`Richtig gezählt: ${n} ${t.plur} in diesem Feld.`);
+      $('.n3',el).textContent=`${n} · ${F} =`;$('.s3',el).hidden=false;$('.i3',el).focus();
+    }else{
+      it.first=false;shake(el);
+      setFb(f2,'bad',`Du hast ${it.marks.size} markiert – es sind mehr. Schau noch einmal genau hin, auch an den Rändern.`);
+    }
+  };
+  const i3=$('.i3',el),i4=$('.i4',el),f3=$('.f3',el),f4=$('.f4',el);
+  $('.b3',el).onclick=()=>{
+    const v=parse(i3.value);if(isNaN(v)){setFb(f3,'','Gib eine Zahl ein.');return}
+    if(v===n*F){prod=v;mark(i3,true);i3.disabled=true;$('.b3',el).hidden=true;setFb(f3,'ok','Richtig!');
+      $('.n4',el).textContent=`${fmt(prod)} ≈`;$('.s4',el).hidden=false;i4.focus();}
+    else{it.first=false;mark(i3,false);shake(el);setFb(f3,'bad',`Noch nicht richtig. Rechne ${n} · ${F} noch einmal.`)}
+  };
+  $('.b4',el).onclick=()=>{
+    const v=parse(i4.value);if(isNaN(v)){setFb(f4,'','Gib eine Zahl ein.');return}
+    if(v===roundTo(prod,c.unit)){
+      est=v;mark(i4,true);i4.disabled=true;$('.b4',el).hidden=true;setFb(f4,'ok','Richtig gerundet!');
+      const real=sc.objs.length,rt=rating(est,real);
+      $('.result',el).innerHTML=`<p><strong>Deine Schätzung: ${fmt(est)} ${t.plur}.</strong></p>
+        <p>Tatsächlich sind es ${fmt(real)}. Das sind ${rt.pct} % Abweichung – ${rt.txt}</p>
+        ${rt.good?'':'<p>Tipp: Wähle ein Feld, das typisch für das ganze Bild ist. Wo die Tiere sehr ungleich verteilt sind, wird die Schätzung ungenauer.</p>'}`;
+      $('.s5',el).hidden=false;it.status='ok';updateProg();
+    }else{it.first=false;mark(i4,false);shake(el);
+      setFb(f4,'bad',`Noch nicht richtig. Schau auf die Stelle rechts neben der ${c.unitTxt}stelle: Bei 0 bis 4 rundest du ab, bei 5 bis 9 auf.`)}
+  };
+  [[i3,'.b3'],[i4,'.b4']].forEach(([i,b])=>i.addEventListener('keydown',e=>{if(e.key==='Enter')$(b,el).click()}));
+}
+
+/* ---- Selbst schätzen ---- */
+function buildFrei(it,el){
+  const sc=it.sc,F=sc.r*sc.c,t=TYPES[sc.type];
+  Object.assign(it,{grid:false,cell:null,marks:new Set(),locked:false,counts:{}});
+  el.innerHTML=`
+  <div class="tbar"><button class="btn ghost tog">Raster einblenden</button><span class="muted hint">Mit Raster kannst du ein Feld antippen und darin zählen.</span></div>
+  <div class="scwrap main"></div>
+  <div class="stage zoom" hidden>
+    <p class="step">Zähle in diesem Feld: Tippe jeden einzelnen an.</p>
+    <p class="step sub">Blasse ${t.plur} gehören zu einem Nachbarfeld.</p>
+    <div class="scwrap zv"></div>
+    <div class="actions"><span class="cnt"></span><button class="btn csave">Zahl ins Bild schreiben</button><button class="btn ghost cclose">Schließen</button></div>
+  </div>
+  <div class="stage">
+    <p class="step">Wie viele ${t.plur} sind es ungefähr?</p>
+    <div class="calc"><input class="inp est" inputmode="numeric" autocomplete="off" aria-label="Deine Schätzung"><button class="btn chk">Prüfen</button></div>
+    <p class="fb" aria-live="polite"></p>
+  </div>`;
+  const main=$('.main',el),zoom=$('.zoom',el),zv=$('.zv',el),tog=$('.tog',el),fb=$('.stage:last-child .fb',el),inp=$('.est',el);
+  const drawMain=()=>main.innerHTML=sceneSVG(sc,{grid:it.grid,cells:it.grid&&!it.locked,sel:zoom.hidden?null:it.cell,labels:it.grid?it.counts:null});
+  const drawZoom=counter(it,zv,$('.cnt',el));
+  tog.onclick=()=>{
+    if(it.locked)return;it.grid=!it.grid;
+    tog.textContent=it.grid?'Raster ausblenden':'Raster einblenden';tog.classList.toggle('on',it.grid);
+    $('.hint',el).textContent=it.grid?`Das Bild hat ${F} gleich große Felder. Tippe ein Feld an, um darin zu zählen.`:'Mit Raster kannst du ein Feld antippen und darin zählen.';
+    if(!it.grid)zoom.hidden=true;drawMain();
+  };
+  main.onclick=e=>{
+    const r=e.target.closest('[data-c]');if(!r||it.locked)return;
+    it.cell=+r.dataset.c;it.marks=new Set();zoom.hidden=false;drawMain();drawZoom();
+    zoom.scrollIntoView({behavior:'smooth',block:'nearest'});
+  };
+  $('.csave',el).onclick=()=>{it.counts[it.cell]=it.marks.size;zoom.hidden=true;drawMain()};
+  $('.cclose',el).onclick=()=>{zoom.hidden=true;drawMain()};
+  drawMain();
+  $('.chk',el).onclick=()=>{
+    const v=parse(inp.value);if(isNaN(v)||v===0){setFb(fb,'','Gib deine Schätzung als Zahl ein.');return}
+    const real=sc.objs.length,rt=rating(v,real);
+    it.locked=true;it.status=rt.good?'ok':'bad';if(!rt.good)it.first=false;
+    inp.disabled=true;$('.chk',el).hidden=true;tog.hidden=true;zoom.hidden=true;mark(inp,rt.good);
+    if(!rt.good)shake(el);
+    setFb(fb,rt.good?'ok':'bad',`${rt.txt} Es sind ${fmt(real)} ${t.plur}. Deine Schätzung liegt ${rt.pct} % daneben.${rt.good?'':` Tipp: Blende das Raster ein, zähle ein typisches Feld und nimm mal ${F}.`}`);
+    drawMain();updateProg();
+  };
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')$('.chk',el).click()});
+}
+
+/* ---------- Start ---------- */
+document.querySelectorAll('.lv').forEach(b=>b.onclick=()=>setLevel(b.dataset.lv));
+setLevel('leicht');
+renderStart();
+</script>
+</body>
+</html>
